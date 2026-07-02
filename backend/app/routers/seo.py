@@ -24,6 +24,7 @@ from app.seo import robots as robots_engine
 from app.seo import sitemap as sm
 from app.seo import schema as S
 from app.seo import metadata as M
+from app.seo import config as seo_config
 
 router = APIRouter(prefix="/api/seo", tags=["seo"])
 
@@ -36,51 +37,35 @@ def _db(request: Request):
 
 
 async def _company(request: Request) -> Dict[str, Any]:
-    """Assemble company facts for JSON-LD from admin-managed settings.
+    """Assemble company facts for JSON-LD, ADMIN-FIRST.
 
-    Never fabricates: unknown fields are simply left empty so schema.py
-    omits them. Real EEAT values (license number, geo, founding date) come
-    from seo_settings once the operator fills them in.
+    Primary source: admin-managed seo_settings (via the SEO config cache).
+    Footer contacts fill any gaps. Never fabricates: unknown fields stay
+    empty so schema.py omits them.
     """
     db = _db(request)
-    company: Dict[str, Any] = {"name": "ECO.NOVA"}
-    # Footer / contacts (already admin-managed)
+    await seo_config.load(db)
+    company: Dict[str, Any] = seo_config.company()
+    # Footer / contacts as a fallback for anything the admin hasn't set yet.
     try:
         from settings_service import get_settings_service  # type: ignore
         footer = await get_settings_service().get_footer()
         contacts = (footer or {}).get("contacts", {})
         comp = (footer or {}).get("company", {})
-        phones = contacts.get("phones") or ([contacts.get("phone")] if contacts.get("phone") else [])
-        company.update({
-            "legal_name": comp.get("legalName"),
-            "edrpou": comp.get("edrpou"),
-            "phones": [p for p in phones if p],
-            "email": contacts.get("email"),
-            "street": contacts.get("address"),
-            "opening_hours": contacts.get("working_hours"),
-        })
-    except Exception:
-        pass
-    # SEO settings (EEAT extras + defaults)
-    try:
-        if db is not None:
-            doc = await db.seo_settings.find_one({"_id": "global"}) or {}
-            for k_src, k_dst in [
-                ("license_number", "license_number"),
-                ("license_name", "license_name"),
-                ("company_city", "city"),
-                ("company_region", "region"),
-                ("company_postal", "postal_code"),
-                ("company_lat", "lat"),
-                ("company_lng", "lng"),
-                ("founding_date", "founding_date"),
-                ("default_og_image", "logo"),
-                ("default_description", "description"),
-                ("same_as", "same_as"),
-            ]:
-                v = doc.get(k_src)
-                if v:
-                    company[k_dst] = v
+        fb_phones = contacts.get("phones") or ([contacts.get("phone")] if contacts.get("phone") else [])
+        if not company.get("legal_name"):
+            company["legal_name"] = comp.get("legalName")
+        if not company.get("edrpou"):
+            company["edrpou"] = comp.get("edrpou")
+        if not company.get("phones"):
+            company["phones"] = [p for p in fb_phones if p]
+            company["phone"] = (company["phones"] or [None])[0]
+        if not company.get("email"):
+            company["email"] = contacts.get("email")
+        if not company.get("street"):
+            company["street"] = contacts.get("address")
+        if not company.get("opening_hours"):
+            company["opening_hours"] = contacts.get("working_hours")
     except Exception:
         pass
     return company
@@ -89,6 +74,7 @@ async def _company(request: Request) -> Dict[str, Any]:
 # ─────────────────────────────────────────────────────────────── robots ──
 @router.get("/robots.txt", response_class=Response)
 async def robots_txt(request: Request) -> Response:
+    await seo_config.load(_db(request))
     return Response(
         content=robots_engine.build_robots(request),
         media_type="text/plain",
@@ -99,18 +85,21 @@ async def robots_txt(request: Request) -> Response:
 # ────────────────────────────────────────────────────────────── sitemaps ──
 @router.get("/sitemap.xml", response_class=Response)
 async def sitemap_index(request: Request) -> Response:
+    await seo_config.load(_db(request))
     return Response(content=sm.sitemap_index(request), media_type=_XML,
                     headers={"Cache-Control": "public, max-age=3600"})
 
 
 @router.get("/sitemap-pages.xml", response_class=Response)
 async def sitemap_pages(request: Request) -> Response:
+    await seo_config.load(_db(request))
     return Response(content=sm.sitemap_pages(request), media_type=_XML,
                     headers={"Cache-Control": "public, max-age=3600"})
 
 
 @router.get("/sitemap-catalog.xml", response_class=Response)
 async def sitemap_catalog(request: Request) -> Response:
+    await seo_config.load(_db(request))
     xml = await sm.sitemap_catalog(_db(request), request)
     return Response(content=xml, media_type=_XML,
                     headers={"Cache-Control": "public, max-age=1800"})
@@ -139,8 +128,9 @@ async def route_meta(
 ) -> Dict[str, Any]:
     """Return everything the frontend <SeoHead> needs for a given route."""
     lang = "en" if (lang or "").lower().startswith("en") else "uk"
-    origin = get_origin(request)
     db = _db(request)
+    await seo_config.load(db)
+    origin = get_origin(request)
     path = path or "/"
     if len(path) > 1 and path.endswith("/"):
         path = path.rstrip("/")

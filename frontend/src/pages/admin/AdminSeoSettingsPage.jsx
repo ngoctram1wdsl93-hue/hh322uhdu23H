@@ -27,6 +27,8 @@ import {
   LinkSimple,
   Eye,
   MagnifyingGlass,
+  Buildings,
+  Certificate,
 } from '@phosphor-icons/react';
 import { useLang } from '../../i18n';
 import HelpTooltip from '../../components/ui/HelpTooltip';
@@ -102,6 +104,40 @@ const T = {
     runtime_endpoint:  'Public runtime endpoint',
     runtime_endpoint_hint:'The frontend reads this to load GA / Ads / Pixel scripts. Test it from your browser:',
     runtime_endpoint_tip:'Read-only endpoint the public site calls on load to fetch these settings. Open it to confirm your GA / Ads / Pixel config is live.',
+    section_domain:    'Domain & environment',
+    section_domain_hint:'The public domain used for every canonical, sitemap, hreflang and JSON-LD URL. Change it here when the real domain goes live — no redeploy.',
+    section_domain_tip: 'Single source of truth for the site origin. Empty = use the server default (preview). Environment controls indexing: only “production” is indexable; preview/stage/test emit noindex + robots Disallow.',
+    f_public_origin:   'Public domain (origin)',
+    f_public_origin_hint:'e.g. https://eco-nova.ua — no trailing slash. Empty = server default.',
+    f_environment:     'Environment',
+    f_environment_hint:'auto detects from host. Only “production” lets Google index the site.',
+    f_indexnow:        'IndexNow key',
+    f_indexnow_hint:   'Optional. Enables instant URL submission to Bing/Yandex via IndexNow.',
+    f_gtm:             'Google Tag Manager ID',
+    f_gtm_hint:        'Format: GTM-XXXXXXX. Optional container for tags.',
+    section_company:   'Company & E-E-A-T',
+    section_company_tip:'Real, verifiable company facts. These feed the Organization / LocalBusiness structured data (schema.org) that proves to Google you are a genuine business. Use REAL data only — never placeholders.',
+    section_company_hint:'Real, verifiable data only — it powers your Organization / LocalBusiness rich results. Empty fields are simply omitted.',
+    f_company_name:    'Brand name',
+    f_legal_name:      'Legal name',
+    f_edrpou:          'EDRPOU / VAT',
+    f_license_number:  'Waste-handling license №',
+    f_license_name:    'License name',
+    f_company_email:   'Public email',
+    f_company_phones:  'Phones (comma-separated)',
+    f_company_street:  'Street address',
+    f_company_city:    'City',
+    f_company_region:  'Region / oblast',
+    f_company_postal:  'Postal code',
+    f_company_country: 'Country (ISO)',
+    f_company_lat:     'Latitude',
+    f_company_lng:     'Longitude',
+    f_founding_date:   'Founding date',
+    f_opening_hours:   'Opening hours',
+    f_price_range:     'Price range',
+    f_same_as:         'Social / sameAs URLs',
+    f_same_as_hint:    'One per line or comma-separated (Facebook, LinkedIn, etc.).',
+    f_company_description:'Short company description',
   },
   bg: {
     page_title:        'SEO настройки',
@@ -218,6 +254,40 @@ const T = {
     runtime_endpoint:  'Публічний runtime ендпойнт',
     runtime_endpoint_hint:'Фронтенд читає це, щоб завантажити GA / Ads / Pixel. Перевірте з браузера:',
     runtime_endpoint_tip:'Лише для читання ендпойнт, який публічний сайт викликає під час завантаження, щоб отримати ці налаштування. Відкрийте його, щоб перевірити, що GA / Ads / Pixel активні.',
+    section_domain:    'Домен і середовище',
+    section_domain_hint:'Публічний домен для всіх canonical, sitemap, hreflang і JSON-LD. Впишіть реальний домен, коли він буде готовий — без ребілду.',
+    section_domain_tip: 'Єдине джерело істини для домену сайту. Порожньо = серверний дефолт (прев’ю). Середовище керує індексацією: лише «production» індексується; preview/stage/test дають noindex + robots Disallow.',
+    f_public_origin:   'Публічний домен (origin)',
+    f_public_origin_hint:'напр. https://eco-nova.ua — без слешу в кінці. Порожньо = серверний дефолт.',
+    f_environment:     'Середовище',
+    f_environment_hint:'auto визначає з хоста. Лише «production» дозволяє індексацію Google.',
+    f_indexnow:        'Ключ IndexNow',
+    f_indexnow_hint:   'Опційно. Вмикає миттєве надсилання URL у Bing/Yandex через IndexNow.',
+    f_gtm:             'ID Google Tag Manager',
+    f_gtm_hint:        'Формат: GTM-XXXXXXX. Опційний контейнер тегів.',
+    section_company:   'Компанія та E-E-A-T',
+    section_company_tip:'Реальні, перевірні дані компанії. Вони живлять структуровані дані Organization / LocalBusiness (schema.org), що доводять Google, що ви — справжній бізнес. Лише РЕАЛЬНІ дані — жодних заглушок.',
+    section_company_hint:'Лише реальні перевірні дані — вони живлять rich results Organization / LocalBusiness. Порожні поля просто не виводяться.',
+    f_company_name:    'Назва бренду',
+    f_legal_name:      'Юридична назва',
+    f_edrpou:          'ЄДРПОУ / ПДВ',
+    f_license_number:  '№ ліцензії на поводження з відходами',
+    f_license_name:    'Назва ліцензії',
+    f_company_email:   'Публічний email',
+    f_company_phones:  'Телефони (через кому)',
+    f_company_street:  'Адреса (вулиця)',
+    f_company_city:    'Місто',
+    f_company_region:  'Область / регіон',
+    f_company_postal:  'Поштовий індекс',
+    f_company_country: 'Країна (ISO)',
+    f_company_lat:     'Широта',
+    f_company_lng:     'Довгота',
+    f_founding_date:   'Дата заснування',
+    f_opening_hours:   'Години роботи',
+    f_price_range:     'Ціновий діапазон',
+    f_same_as:         'Соцмережі / sameAs URL',
+    f_same_as_hint:    'По одному в рядку або через кому (Facebook, LinkedIn тощо).',
+    f_company_description:'Короткий опис компанії',
   },
 };
 
@@ -319,7 +389,7 @@ const Toggle = ({ label, hint, checked, onChange }) => (
 
 const AdminSeoSettingsPage = () => {
   const { lang } = useLang();
-  const t = T[lang] || T.en;
+  const t = useMemo(() => ({ ...T.en, ...(T[lang] || {}) }), [lang]);
 
   const [data,     setData]     = useState(null);
   const [draft,    setDraft]    = useState(null);
@@ -447,7 +517,83 @@ const AdminSeoSettingsPage = () => {
         </div>
       </div>
 
-      {/* ─── 1. Verification ──────────────────────────────────────── */}
+      {/* ─── 1. Domain & environment ──────────────────────────────── */}
+      <Section icon={Globe} title={t.section_domain} hint={t.section_domain_hint} tooltip={t.section_domain_tip}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field
+            label={t.f_public_origin}
+            value={draft.public_origin}
+            onChange={(v) => setField('public_origin', v)}
+            placeholder="https://eco-nova.ua"
+            hint={t.f_public_origin_hint}
+            mono
+            data-testid="seo-input-origin"
+          />
+          <label className="block">
+            <span className="block text-[10.5px] font-semibold uppercase tracking-wider text-[#71717A] mb-1.5">{t.f_environment}</span>
+            <select
+              value={draft.seo_environment || 'auto'}
+              onChange={(e) => setField('seo_environment', e.target.value)}
+              className="w-full h-10 px-3 rounded-lg border border-[#E4E4E7] bg-white text-[13px] focus:outline-none focus:border-[#18181B]"
+              data-testid="seo-input-environment"
+            >
+              <option value="auto">auto</option>
+              <option value="production">production</option>
+              <option value="preview">preview</option>
+              <option value="stage">stage</option>
+              <option value="test">test</option>
+              <option value="dev">dev</option>
+            </select>
+            <p className="text-[11px] text-[#71717A] mt-1.5 leading-snug">{t.f_environment_hint}</p>
+          </label>
+          <Field
+            label={t.f_gtm}
+            value={draft.gtm_container_id}
+            onChange={(v) => setField('gtm_container_id', v.toUpperCase())}
+            placeholder="GTM-XXXXXXX"
+            hint={t.f_gtm_hint}
+            mono
+            data-testid="seo-input-gtm"
+          />
+          <Field
+            label={t.f_indexnow}
+            value={draft.indexnow_key}
+            onChange={(v) => setField('indexnow_key', v)}
+            placeholder="a1b2c3…"
+            hint={t.f_indexnow_hint}
+            mono
+            data-testid="seo-input-indexnow"
+          />
+        </div>
+      </Section>
+
+      {/* ─── 2. Company & E-E-A-T ──────────────────────────────────── */}
+      <Section icon={Buildings} title={t.section_company} hint={t.section_company_hint} tooltip={t.section_company_tip}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label={t.f_company_name} value={draft.company_name} onChange={(v) => setField('company_name', v)} placeholder="ECO.NOVA" data-testid="seo-input-company-name" />
+          <Field label={t.f_legal_name} value={draft.legal_name} onChange={(v) => setField('legal_name', v)} placeholder="ТОВ «ЕКО-НОВА»" data-testid="seo-input-legal-name" />
+          <Field label={t.f_edrpou} value={draft.edrpou} onChange={(v) => setField('edrpou', v)} placeholder="12345678" mono />
+          <Field label={t.f_founding_date} value={draft.founding_date} onChange={(v) => setField('founding_date', v)} placeholder="2019-03-01" mono />
+          <Field label={t.f_license_number} value={draft.license_number} onChange={(v) => setField('license_number', v)} placeholder="UA-HW-…" mono data-testid="seo-input-license" />
+          <Field label={t.f_license_name} value={draft.license_name} onChange={(v) => setField('license_name', v)} placeholder="Ліцензія на поводження з небезпечними відходами" />
+          <Field label={t.f_company_email} value={draft.company_email} onChange={(v) => setField('company_email', v)} placeholder="info@eco-nova.ua" mono />
+          <Field label={t.f_company_phones} value={draft.company_phones} onChange={(v) => setField('company_phones', v)} placeholder="+380 44 …, +380 67 …" />
+          <Field label={t.f_company_street} value={draft.company_street} onChange={(v) => setField('company_street', v)} placeholder="вул. …" />
+          <Field label={t.f_company_city} value={draft.company_city} onChange={(v) => setField('company_city', v)} placeholder="Київ" />
+          <Field label={t.f_company_region} value={draft.company_region} onChange={(v) => setField('company_region', v)} placeholder="Київська обл." />
+          <Field label={t.f_company_postal} value={draft.company_postal} onChange={(v) => setField('company_postal', v)} placeholder="01001" mono />
+          <Field label={t.f_company_country} value={draft.company_country} onChange={(v) => setField('company_country', v.toUpperCase())} placeholder="UA" mono />
+          <Field label={t.f_opening_hours} value={draft.opening_hours} onChange={(v) => setField('opening_hours', v)} placeholder="Mo-Fr 09:00-18:00" mono />
+          <Field label={t.f_company_lat} value={draft.company_lat} onChange={(v) => setField('company_lat', v)} placeholder="50.4501" mono />
+          <Field label={t.f_company_lng} value={draft.company_lng} onChange={(v) => setField('company_lng', v)} placeholder="30.5234" mono />
+        </div>
+        <div className="mt-4 space-y-4">
+          <TextArea label={t.f_same_as} value={draft.same_as} onChange={(v) => setField('same_as', v)} rows={2} hint={t.f_same_as_hint} />
+          <TextArea label={t.f_company_description} value={draft.company_description} onChange={(v) => setField('company_description', v)} rows={2} max={600} />
+        </div>
+      </Section>
+
+      {/* ─── 3. Verification ──────────────────────────────────────── */}
       <Section icon={ShieldCheck} title={t.section_verify} hint={t.section_verify_hint} tooltip={t.section_verify_tip}>
         <div className="grid grid-cols-1 gap-4">
           <Field
@@ -533,14 +679,6 @@ const AdminSeoSettingsPage = () => {
                 data-testid="seo-label-lead"
               />
               <Field
-                label={t.label_vin}
-                value={draft.google_ads_conversion_labels?.vin_search}
-                onChange={(v) => setLabel('vin_search', v)}
-                placeholder="def456PqR"
-                mono
-                data-testid="seo-label-vin"
-              />
-              <Field
                 label={t.label_calc}
                 value={draft.google_ads_conversion_labels?.calc_used}
                 onChange={(v) => setLabel('calc_used', v)}
@@ -568,7 +706,7 @@ const AdminSeoSettingsPage = () => {
             label={t.default_title}
             value={draft.default_title}
             onChange={(v) => setField('default_title', v)}
-            placeholder="BIBI Cars — …"
+            placeholder="ECO.NOVA — …"
           />
           <TextArea
             label={t.default_description}

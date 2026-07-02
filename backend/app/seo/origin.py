@@ -40,11 +40,23 @@ def _env_origin() -> str:
 
 
 def get_origin(request=None) -> str:
-    """Return the canonical public origin, e.g. https://eco-nova.ua (no slash)."""
+    """Return the canonical public origin, e.g. https://eco-nova.ua (no slash).
+
+    Priority: admin setting (seo_settings.public_origin) → env → request host.
+    """
+    # 1. Admin-managed domain (edited in the SEO settings panel).
+    try:
+        from . import config as _seo_config
+        admin = _seo_config.public_origin()
+        if admin:
+            return admin
+    except Exception:
+        pass
+    # 2. Environment variable.
     env = _env_origin()
     if env:
         return env
-    # Fall back to the request host so we never emit an empty <loc>.
+    # 3. Fall back to the request host so we never emit an empty <loc>.
     if request is not None:
         try:
             host = request.headers.get("x-forwarded-host") or request.headers.get("host") or ""
@@ -60,7 +72,17 @@ def get_origin(request=None) -> str:
 
 
 def get_environment(request=None) -> str:
-    """Return a normalized environment name."""
+    """Return a normalized environment name.
+
+    Priority: admin setting → env var → inferred from host.
+    """
+    try:
+        from . import config as _seo_config
+        override = _seo_config.environment_override()
+        if override:
+            return override
+    except Exception:
+        pass
     explicit = (os.environ.get("SEO_ENV") or "").strip().lower()
     if explicit:
         if explicit in ("prod", "production", "live"):

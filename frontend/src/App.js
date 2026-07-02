@@ -72,6 +72,7 @@ import AdminBlogPage from "@/pages/admin/AdminBlogPage";
 import WasteLeads from "@/pages/portal/WasteLeads";
 import SeoHead from "@/components/seo/SeoHead";
 import SeoRuntimeInjector from "@/components/seo/SeoRuntimeInjector";
+import AdminSeoSettingsPage from "@/pages/admin/AdminSeoSettingsPage";
 
 // Role-aware landing for /app: managers go straight to their personal cabinet,
 // admins (and any other staff) see the operations dashboard.
@@ -148,6 +149,7 @@ export default function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="settings/footer" element={<AdminFooterPage />} />
             <Route path="settings/contacts" element={<AdminContactsPage />} />
+            <Route path="settings/seo" element={<AdminSeoSettingsPage />} />
             <Route path="info" element={<AdminInfoPage />} />
             <Route path="info/:tab" element={<AdminInfoPage />} />
             <Route path="blog" element={<AdminBlogPage />} />

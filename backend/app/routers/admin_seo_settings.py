@@ -46,28 +46,52 @@ DOC_ID = "global"
 
 DEFAULT_DOC: Dict[str, Any] = {
     "_id": DOC_ID,
+    # ─── Domain & environment (admin-managed, no redeploy) ───────────────
+    "public_origin":   "",     # e.g. https://eco-nova.ua  (empty → env/host)
+    "seo_environment": "auto", # auto | production | preview | stage | test | dev
     # ─── Search-engine verification tokens (paste from console screens) ──
     "google_site_verification": "",
     "bing_site_verification":   "",
     "yandex_site_verification": "",
+    "indexnow_key":             "",
     # ─── Analytics & advertising IDs ─────────────────────────────────────
     "ga4_measurement_id":       "",   # e.g. "G-XXXXXXXXXX"
+    "gtm_container_id":         "",   # e.g. "GTM-XXXXXXX"
     "google_ads_conversion_id": "",   # e.g. "AW-XXXXXXXXX"
     "google_ads_send_page_view": True,
     "google_ads_conversion_labels": {
-        "lead_submit":   "",
-        "vin_search":    "",
-        "calc_used":     "",
+        "lead_submit":     "",
+        "calc_used":       "",
         "contract_signed": "",
     },
     "facebook_pixel_id":        "",
+    # ─── Company identity & E-E-A-T (feeds JSON-LD Organization/LocalBusiness) ─
+    "company_name":        "ECO.NOVA",
+    "legal_name":          "",     # ТОВ «ЕКО-НОВА»
+    "edrpou":              "",     # ЄДРПОУ / VAT
+    "license_number":      "",     # № ліцензії на поводження з небезпечними відходами
+    "license_name":        "",
+    "company_email":       "",
+    "company_phones":      "",     # comma-separated
+    "company_street":      "",
+    "company_city":        "",
+    "company_region":      "",
+    "company_postal":      "",
+    "company_country":     "UA",
+    "company_lat":         "",
+    "company_lng":         "",
+    "founding_date":       "",     # YYYY-MM-DD
+    "opening_hours":       "",     # e.g. "Mo-Fr 09:00-18:00"
+    "price_range":         "",
+    "same_as":             "",     # newline/comma-separated social URLs
+    "company_description": "",
     # ─── Site identity overrides ─────────────────────────────────────────
-    "default_title":         "BIBI Cars — Pre-owned car import from US & Korea to Bulgaria",
-    "default_description":   "BIBI Cars — auction-to-keys car import platform. Live calculator, VIN check, customs handling and door-to-door delivery of pre-owned vehicles from the United States and South Korea to Bulgaria.",
-    "default_keywords":      "car import bulgaria, used cars bulgaria, copart bulgaria, encar bulgaria, vehicle import calculator, vin check bulgaria",
+    "default_title":         "ECO.NOVA — Утилізація небезпечних відходів для бізнесу | B2B Україна",
+    "default_description":   "ECO.NOVA — ліцензований оператор поводження з небезпечними відходами. Класифікація, збір, вивіз, утилізація та повний документальний супровід для бізнесу в одній прозорій B2B-системі.",
+    "default_keywords":      "утилізація небезпечних відходів, поводження з відходами, вивіз відходів, класифікація відходів, нацперелік відходів, B2B утилізація, ECO.NOVA",
     "default_og_image":      "/og-image.png",
     # ─── Crawler directives ──────────────────────────────────────────────
-    "block_ai_crawlers":     True,    # GPTBot, anthropic-ai, Claude-Web, CCBot
+    "block_ai_crawlers":     False,   # GPTBot, anthropic-ai, Claude-Web, CCBot
     # ─── Metadata ────────────────────────────────────────────────────────
     "updated_at": None,
     "updated_by": None,
@@ -203,6 +227,42 @@ async def update_seo_settings(
     if "block_ai_crawlers" in data:
         update["block_ai_crawlers"] = bool(data["block_ai_crawlers"])
 
+    # ─── Domain & environment ────────────────────────────────────────────
+    if "public_origin" in data:
+        v = (data["public_origin"] or "").strip().rstrip("/")
+        if v and not (v.startswith("http://") or v.startswith("https://")):
+            raise HTTPException(422, "public_origin must start with http:// or https://")
+        update["public_origin"] = v
+    if "seo_environment" in data:
+        v = (data["seo_environment"] or "auto").strip().lower()
+        if v not in ("auto", "production", "preview", "stage", "staging", "test", "dev"):
+            raise HTTPException(422, "seo_environment: auto|production|preview|stage|test|dev")
+        update["seo_environment"] = v
+    if "indexnow_key" in data:
+        update["indexnow_key"] = (data["indexnow_key"] or "").strip()
+    if "gtm_container_id" in data:
+        v = (data["gtm_container_id"] or "").strip().upper()
+        if v and not re.match(r"^GTM-[A-Z0-9]{4,10}$", v):
+            raise HTTPException(422, "gtm_container_id: expected format GTM-XXXXXXX")
+        update["gtm_container_id"] = v
+
+    # ─── Company identity & E-E-A-T (free-text, length-capped) ───────────
+    _STR_FIELDS = {
+        "company_name": 120, "legal_name": 200, "edrpou": 40,
+        "license_number": 120, "license_name": 200, "company_email": 160,
+        "company_phones": 200, "company_street": 200, "company_city": 120,
+        "company_region": 120, "company_postal": 20, "company_country": 4,
+        "company_lat": 32, "company_lng": 32, "founding_date": 20,
+        "opening_hours": 120, "price_range": 20, "same_as": 1000,
+        "company_description": 600,
+    }
+    for fld, maxlen in _STR_FIELDS.items():
+        if fld in data:
+            v = (str(data[fld] or "")).strip()
+            if len(v) > maxlen:
+                raise HTTPException(422, f"{fld} is too long (max {maxlen} chars)")
+            update[fld] = v
+
     if not update:
         raise HTTPException(400, "No valid fields supplied")
 
@@ -218,6 +278,14 @@ async def update_seo_settings(
 
     logger.info("[seo] settings updated by %s: keys=%s",
                 update["updated_by"], list(update.keys()))
+
+    # Invalidate the SEO engine cache so domain/EEAT/env changes apply
+    # on the very next request (no redeploy).
+    try:
+        from app.seo import config as _seo_config
+        _seo_config.invalidate()
+    except Exception:
+        pass
 
     return {
         "success":  True,
