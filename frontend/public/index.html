@@ -1,28 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="uk">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
         <!-- ═══════════════════════════════════════════════════════════════
-             Primary identity (default — overridden per-route by useSeo())
+             Primary identity (baseline default — overridden per-route by
+             the <SeoHead> component which injects unique title/description/
+             canonical/OG/Twitter/JSON-LD/hreflang for every page)
              ═════════════════════════════════════════════════════════════ -->
         <title>ECO.NOVA — Утилізація небезпечних відходів для бізнесу | B2B Україна</title>
         <meta name="description" content="ECO.NOVA — ліцензований оператор поводження з небезпечними відходами. Класифікація, збір, вивіз, утилізація та повний документальний супровід для бізнесу в одній прозорій B2B-системі." />
-        <meta name="keywords" content="утилізація небезпечних відходів, поводження з відходами, ліцензія на відходи, вивіз відходів, класифікація відходів, нацперелік відходів, B2B утилізація, ECO.NOVA" />
-        <meta name="author" content="ПМ АВТО ГРУП ЕООД" />
+        <meta name="author" content="ТОВ «ЕКО-НОВА»" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
         <meta name="format-detection" content="telephone=yes" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <link rel="canonical" href="https://bibicars.bg/" />
+        <link rel="canonical" href="https://architecture-preview-4.preview.emergentagent.com/" />
 
-        <!-- Language alternates (public site is en + bg) -->
-        <link rel="alternate" hreflang="en" href="https://bibicars.bg/?lang=en" />
-        <link rel="alternate" hreflang="bg" href="https://bibicars.bg/?lang=bg" />
-        <link rel="alternate" hreflang="x-default" href="https://bibicars.bg/" />
+        <!-- Language alternates (public site is Ukrainian primary + English) -->
+        <link rel="alternate" hreflang="uk" href="https://architecture-preview-4.preview.emergentagent.com/" />
+        <link rel="alternate" hreflang="en" href="https://architecture-preview-4.preview.emergentagent.com/?lang=en" />
+        <link rel="alternate" hreflang="x-default" href="https://architecture-preview-4.preview.emergentagent.com/" />
 
         <!-- ═══════════════════════════════════════════════════════════════
              Favicons — full modern set
@@ -50,36 +51,29 @@
 
         <!-- ═══════════════════════════════════════════════════════════════
              Open Graph (Facebook, LinkedIn, Telegram, Viber, WhatsApp…)
+             baseline — per-route values injected by <SeoHead>
              ═════════════════════════════════════════════════════════════ -->
-        <meta property="og:type"            content="website" />
-        <meta property="og:site_name"       content="ECO.NOVA" />
-        <meta property="og:title"           content="ECO.NOVA — Утилізація небезпечних відходів для бізнесу" />
-        <meta property="og:description"     content="Ліцензований оператор: класифікація, збір, вивіз, утилізація та повний документальний супровід небезпечних відходів." />
-        <meta property="og:url"             content="https://bibicars.bg/" />
-        <meta property="og:locale"          content="en_US" />
-        <meta property="og:locale:alternate" content="bg_BG" />
-        <meta property="og:image"           content="https://bibicars.bg/og-image.png" />
-        <meta property="og:image:width"     content="1200" />
-        <meta property="og:image:height"    content="630" />
-        <meta property="og:image:type"      content="image/png" />
-        <meta property="og:image:alt"       content="ECO.NOVA — платформа утилізації небезпечних відходів" />
+        <meta property="og:type"             content="website" />
+        <meta property="og:site_name"        content="ECO.NOVA" />
+        <meta property="og:title"            content="ECO.NOVA — Утилізація небезпечних відходів для бізнесу" />
+        <meta property="og:description"      content="Ліцензований оператор: класифікація, збір, вивіз, утилізація та повний документальний супровід небезпечних відходів." />
+        <meta property="og:url"              content="https://architecture-preview-4.preview.emergentagent.com/" />
+        <meta property="og:locale"           content="uk_UA" />
+        <meta property="og:locale:alternate" content="en_US" />
+        <meta property="og:image"            content="https://architecture-preview-4.preview.emergentagent.com/og-image.png" />
+        <meta property="og:image:width"      content="1200" />
+        <meta property="og:image:height"     content="630" />
+        <meta property="og:image:type"       content="image/png" />
+        <meta property="og:image:alt"        content="ECO.NOVA — платформа утилізації небезпечних відходів" />
 
         <!-- ═══════════════════════════════════════════════════════════════
-             Twitter / X cards
+             Twitter / X cards (baseline)
              ═════════════════════════════════════════════════════════════ -->
         <meta name="twitter:card"        content="summary_large_image" />
         <meta name="twitter:title"       content="ECO.NOVA — Утилізація небезпечних відходів" />
         <meta name="twitter:description" content="Ліцензований B2B-оператор поводження з небезпечними відходами в Україні." />
-        <meta name="twitter:image"       content="https://bibicars.bg/og-image.png" />
+        <meta name="twitter:image"       content="https://architecture-preview-4.preview.emergentagent.com/og-image.png" />
         <meta name="twitter:image:alt"   content="ECO.NOVA" />
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             Verification placeholders — paste real codes when issued
-             (Search Console, Bing Webmasters, Yandex Webmaster, Pinterest)
-             ═════════════════════════════════════════════════════════════ -->
-        <meta name="google-site-verification" content="REPLACE_ME_GOOGLE_SEARCH_CONSOLE_TOKEN" />
-        <meta name="msvalidate.01" content="REPLACE_ME_BING_WEBMASTER_TOKEN" />
-        <meta name="yandex-verification" content="REPLACE_ME_YANDEX_WEBMASTER_TOKEN" />
 
         <!-- ═══════════════════════════════════════════════════════════════
              Performance: connection prefetch / preconnect (saves 1-2 RTTs)
@@ -113,101 +107,47 @@
         </style>
 
         <!-- ═══════════════════════════════════════════════════════════════
-             Structured data (JSON-LD) — Schema.org
-             • Organization     → brand & contact identity
-             • AutoDealer       → business type (Google Business Profile linkage)
-             • WebSite          → enables sitelinks search box in Google SERPs
+             Structured data (JSON-LD) — Schema.org baseline
+             • Organization / ProfessionalService → brand & contact identity
+             • WebSite + SearchAction              → sitelinks search box
+             Per-page graphs (WebPage, BreadcrumbList, Service, FAQPage,
+             Article, SoftwareApplication…) are injected by <SeoHead>.
              ═════════════════════════════════════════════════════════════ -->
         <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@graph": [
             {
-              "@type": "Organization",
-              "@id": "https://bibicars.bg/#organization",
+              "@type": ["Organization", "ProfessionalService"],
+              "@id": "https://architecture-preview-4.preview.emergentagent.com/#organization",
               "name": "ECO.NOVA",
-              "legalName": "ПМ АВТО ГРУП ЕООД",
-              "url": "https://bibicars.bg/",
+              "legalName": "ТОВ «ЕКО-НОВА»",
+              "url": "https://architecture-preview-4.preview.emergentagent.com/",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://bibicars.bg/android-chrome-512x512.png",
+                "url": "https://architecture-preview-4.preview.emergentagent.com/android-chrome-512x512.png",
                 "width": 512,
                 "height": 512
               },
-              "image": "https://bibicars.bg/og-image.png",
-              "description": "Auction-to-keys vehicle import platform — pre-owned cars from US and South Korea delivered to Bulgaria.",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "бул. Черни връх 230",
-                "addressLocality": "София",
-                "addressCountry": "BG"
-              },
-              "vatID": "BG206637283",
-              "taxID": "206637283",
-              "founder": {
-                "@type": "Person",
-                "name": "Павло Маслов"
-              },
-              "areaServed": [
-                { "@type": "Country", "name": "Bulgaria" },
-                { "@type": "Country", "name": "Romania" },
-                { "@type": "Country", "name": "Greece" }
-              ],
+              "image": "https://architecture-preview-4.preview.emergentagent.com/og-image.png",
+              "description": "Ліцензований оператор поводження з небезпечними відходами в Україні: класифікація, збір, вивіз, утилізація та документальний супровід для бізнесу.",
+              "areaServed": { "@type": "Country", "name": "Ukraine" },
+              "availableLanguage": ["uk", "en"],
               "sameAs": []
             },
             {
-              "@type": "AutoDealer",
-              "@id": "https://bibicars.bg/#autodealer",
-              "name": "ECO.NOVA",
-              "url": "https://bibicars.bg/",
-              "image": "https://bibicars.bg/og-image.png",
-              "priceRange": "€€",
-              "currenciesAccepted": "EUR, BGN, USD",
-              "paymentAccepted": "Wire transfer, Stripe, Cash",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "бул. Черни връх 230",
-                "addressLocality": "София",
-                "postalCode": "1407",
-                "addressCountry": "BG"
-              },
-              "geo": {
-                "@type": "GeoCoordinates",
-                "latitude": 42.6630,
-                "longitude": 23.3170
-              },
-              "openingHoursSpecification": [
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-                  "opens": "09:00",
-                  "closes": "18:00"
-                },
-                {
-                  "@type": "OpeningHoursSpecification",
-                  "dayOfWeek": "Saturday",
-                  "opens": "10:00",
-                  "closes": "16:00"
-                }
-              ],
-              "makesOffer": [
-                {"@type":"Offer","itemOffered":{"@type":"Car","name":"USA auction vehicles (Copart, IAAI, Manheim)"}},
-                {"@type":"Offer","itemOffered":{"@type":"Car","name":"South Korea auction vehicles (ENCAR)"}}
-              ]
-            },
-            {
               "@type": "WebSite",
-              "@id": "https://bibicars.bg/#website",
-              "url": "https://bibicars.bg/",
+              "@id": "https://architecture-preview-4.preview.emergentagent.com/#website",
+              "url": "https://architecture-preview-4.preview.emergentagent.com/",
               "name": "ECO.NOVA",
-              "description": "Pre-owned car import platform",
-              "publisher": { "@id": "https://bibicars.bg/#organization" },
-              "inLanguage": ["en", "bg"],
+              "description": "Платформа поводження з небезпечними відходами для бізнесу",
+              "publisher": { "@id": "https://architecture-preview-4.preview.emergentagent.com/#organization" },
+              "inLanguage": ["uk", "en"],
               "potentialAction": {
                 "@type": "SearchAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": "https://bibicars.bg/search/{search_term_string}"
+                  "urlTemplate": "https://architecture-preview-4.preview.emergentagent.com/waste?q={search_term_string}"
                 },
                 "query-input": "required name=search_term_string"
               }
@@ -215,35 +155,6 @@
           ]
         }
         </script>
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             Google Analytics 4 — placeholder, replace G-XXXXXXXXXX
-             ═════════════════════════════════════════════════════════════ -->
-        <!--
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX', {
-                anonymize_ip: true,
-                cookie_flags: 'SameSite=None;Secure'
-            });
-        </script>
-        -->
-
-        <!-- ═══════════════════════════════════════════════════════════════
-             Google Ads conversion linker — placeholder, replace AW-XXXXX
-             ═════════════════════════════════════════════════════════════ -->
-        <!--
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"></script>
-        <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-XXXXXXXXX');
-        </script>
-        -->
 
         <!-- Harmless error suppression (kept from previous setup) -->
         <script>

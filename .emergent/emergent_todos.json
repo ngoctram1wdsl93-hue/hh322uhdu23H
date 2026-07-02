@@ -1,18 +1,42 @@
 [
   {
-    "content": "Fix FOOTER_DEFAULTS.bottomLinks in settings_service.py to include all 3 policy links (Terms, Privacy, Cookies), consistent with EN",
+    "content": "Phase A — Stage 1: Purge BiBi Cars legacy from SEO surfaces",
     "status": "completed"
   },
   {
-    "content": "Verify /api/public/footer returns 3 links; confirm Ukrainian footer renders all three",
+    "content": "Phase A — Stage 2: Central backend SEO package (origin, canonical, hreflang, robots, sitemap, schema, metadata)",
     "status": "completed"
   },
   {
-    "content": "Verify admin editability end-to-end (footer links at /app/settings/footer, legal texts + cookie banner at /app/info)",
+    "content": "Phase A — Stages 5/6/7/8: sitemap engine, robots engine, canonical engine, hreflang",
     "status": "completed"
   },
   {
-    "content": "Visually verify UK + EN public footer + cookie banner via screenshots",
+    "content": "Phase A — /api/seo/meta per-route metadata + JSON-LD endpoint + runtime-config",
     "status": "completed"
+  },
+  {
+    "content": "Phase B — Frontend <SeoHead> (per-route title/desc/canonical/OG/Twitter/JSON-LD/hreflang + host-based noindex) + mount SeoRuntimeInjector",
+    "status": "completed"
+  },
+  {
+    "content": "Phase B — Admin SEO settings UI: EEAT fields (license#, address, geo, founding date) + verification/GA4/GTM/IndexNow wiring",
+    "status": "pending"
+  },
+  {
+    "content": "Phase C — Bot prerender / server-side head injection for crawlers (Stage 15)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase D — Content & E-E-A-T rewrite (Stages 12,13)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase E — Image SEO, Core Web Vitals, crawl/internal-linking, semantic HTML, accessibility (Stages 9,10,11,16,17)",
+    "status": "pending"
+  },
+  {
+    "content": "Phase F — Final audit + SEO Audit Report (Stage 18)",
+    "status": "pending"
   }
 ]

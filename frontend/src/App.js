@@ -70,6 +70,8 @@ import AdminContactsPage from "@/pages/admin/AdminContactsPage";
 import AdminInfoPage from "@/pages/admin/AdminInfoPage";
 import AdminBlogPage from "@/pages/admin/AdminBlogPage";
 import WasteLeads from "@/pages/portal/WasteLeads";
+import SeoHead from "@/components/seo/SeoHead";
+import SeoRuntimeInjector from "@/components/seo/SeoRuntimeInjector";
 
 // Role-aware landing for /app: managers go straight to their personal cabinet,
 // admins (and any other staff) see the operations dashboard.
@@ -88,6 +90,8 @@ export default function App() {
     <AuthProvider>
       <ClientAuthProvider>
         <BrowserRouter>
+          <SeoHead />
+          <SeoRuntimeInjector />
           <Routes>
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />

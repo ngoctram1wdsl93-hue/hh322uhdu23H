@@ -311,12 +311,12 @@ export default function AuthSettingsPage({ embedded = false }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field
               label="Base URL (backend)"
-              hint={t('adm_example_httpsbibicarsbg_no_trailing_slash')}
+              hint={t('adm_example_httpseconovaua_no_trailing_slash')}
             >
               <Input
                 value={urls.baseUrl}
                 onChange={(e) => setUrls({ ...urls, baseUrl: e.target.value })}
-                placeholder="https://bibicars.bg"
+                placeholder="https://eco-nova.ua"
                 data-testid="auth-input-baseUrl"
               />
             </Field>
@@ -327,7 +327,7 @@ export default function AuthSettingsPage({ embedded = false }) {
               <Input
                 value={urls.frontendUrl}
                 onChange={(e) => setUrls({ ...urls, frontendUrl: e.target.value })}
-                placeholder="https://bibicars.bg"
+                placeholder="https://eco-nova.ua"
                 data-testid="auth-input-frontendUrl"
               />
             </Field>
@@ -369,12 +369,12 @@ export default function AuthSettingsPage({ embedded = false }) {
           </Field>
           <Field
             label="Allowed domains"
-            hint="Comma-separated (e.g. bibi.cars, partner.com). Leave empty to allow any verified Google account."
+            hint="Comma-separated (e.g. eco-nova.ua, partner.com). Leave empty to allow any verified Google account."
           >
             <Input
               value={google.allowedDomains}
               onChange={(e) => setGoogle({ ...google, allowedDomains: e.target.value })}
-              placeholder="bibi.cars, partner.com"
+              placeholder="eco-nova.ua, partner.com"
               data-testid="auth-input-googleAllowedDomains"
             />
           </Field>
@@ -572,7 +572,7 @@ export default function AuthSettingsPage({ embedded = false }) {
               <Input
                 value={email.from}
                 onChange={(e) => setEmail({ ...email, from: e.target.value })}
-                placeholder={t('adm_noreplybibicarsbg') || 'no-reply@bibicars.bg'}
+                placeholder={t('adm_noreplyeconovaua') || 'no-reply@eco-nova.ua'}
                 data-testid="auth-input-emailFrom"
               />
             </Field>
@@ -580,7 +580,7 @@ export default function AuthSettingsPage({ embedded = false }) {
               <Input
                 value={email.replyTo}
                 onChange={(e) => setEmail({ ...email, replyTo: e.target.value })}
-                placeholder={t('adm_supportbibicarsbg') || 'support@bibicars.bg'}
+                placeholder={t('adm_supporteconovaua') || 'support@eco-nova.ua'}
                 data-testid="auth-input-emailReplyTo"
               />
             </Field>

@@ -1,136 +1,163 @@
-# IBAN (Bank Transfer) Payments + Contract Signing — Delivery Plan (ECO.NOVA)
+# SEO Production Hardening — Delivery Plan (ECO.NOVA)
 
 ## 1) Objectives
-- Ship a complete **contract-first → IBAN invoice → client proof → manager confirmation → order execution** flow.
-- Keep **Stripe frozen**: keep code, but make IBAN the only usable payment path in client-facing UX.
-- Support **admin-configurable requisites per currency** (UAH primary; USD/EUR optional) with invoice-time snapshotting.
-- Support **online e-sign** (contracts_v2) and **offline signing** (manager uploads signed file + marks signed).
-- Ensure **proof file is mandatory** for client payment confirmation.
-
-**Current status:** Objectives are **completed and verified** (backend + UI + E2E).
+- Eliminate **all BiBi Cars / bibicars.bg SEO legacy** across frontend + backend (zero stale canonicals/hreflang/sitemaps/OG/Schema/etc.).
+- Build a **centralized SEO platform** (backend-driven engines + frontend SeoHead) that generates consistent, production-grade SEO surfaces.
+- Ensure every public route has **unique, human-grade metadata** + **validated JSON‑LD** + **correct canonical/hreflang**.
+- Provide **dynamic sitemap + robots per environment** (prod indexable, non-prod noindex/disallow).
+- Add **SSR/prerender for crawlers** so Google receives ready HTML (not a templated SPA shell).
+- Harden public content to **E‑E‑A‑T** and avoid AI‑template signals (no stuffing, no hacks).
+- Finish with a **SEO Audit Report** + Lighthouse/CWV validation.
 
 ## 2) Implementation Steps
 
-### Phase 1 — Core Flow POC (backend-first, isolate the risky workflow)
-**Goal:** Prove end-to-end state machine works in isolation before UI work.
+### Phase 1 — Core SEO Engines POC (isolation; must be green before UI)
+**Goal:** Prove we can generate correct SEO outputs (robots/sitemap/canonical/hreflang) from a single origin and with env rules.
 
 User stories:
-1. As an admin, I can set requisites for UAH (and optionally USD/EUR) so invoices can be issued.
-2. As a manager, I cannot issue an IBAN invoice unless a linked contract is **signed**.
-3. As a client, I can upload a payment proof file and mark an invoice as paid (claim).
-4. As a manager, I can review a payment claim and confirm it to trigger order execution.
-5. As a manager, I can reject a claim and return the invoice to “sent”.
+1. As an operator, I can set a single public origin (SEO_PUBLIC_ORIGIN) and all SEO outputs use it.
+2. As Googlebot, I receive a valid **robots.txt** that points to sitemap and allows indexing only in production.
+3. As Googlebot, I receive a valid **sitemap index** that references typed sitemaps with lastmod.
+4. As a user, canonical URLs never include utm/fbclid/gclid/session/preview parameters.
+5. As a bilingual visitor, every indexable page declares correct hreflang (uk/en/x-default) without loops.
 
-Backend changes (minimal but complete):
-- ✅ **Requisites model upgrade**
-  - `billing_settings` supports: legal entity fields + `accounts[]` per currency (UAH/USD/EUR).
-  - `GET/PUT /api/admin/billing/requisites` + `GET /api/billing/requisites` return new shape.
-  - Backwards compatible: legacy single-IBAN config migrates-on-read.
-  - `issue-iban` snapshots the **currency-specific account** and payment purpose into the invoice.
-- ✅ **Contract gating for issuing IBAN invoice**
-  - `POST /api/invoices/{id}/issue-iban` requires `contracts_v2` linked to invoice and `lifecycle == signed`.
-- ✅ **Offline contract signing (manager)**
-  - `POST /api/manager/invoices/{id}/contract/offline-sign` uploads file + marks/creates `contracts_v2` as `signed`.
-- ✅ **Online contract send (manager)**
-  - `POST /api/manager/invoices/{id}/contract/send-online` generates/ensures a contract and marks it `sent` (public view token).
-- ✅ **Payment claim hard requirement**
-  - `POST /api/client/invoices/{id}/confirm-payment` requires non-empty `proof_url`.
-- ✅ **Payment confirmation executes the order**
-  - `POST /api/invoices/{id}/confirm-payment` marks invoice paid and calls `create_order_from_invoice` (idempotent).
-- ✅ **Reject flow**
-  - `POST /api/invoices/{id}/reject-payment` returns invoice to `sent` and records reason.
-- ✅ **Defaults / robustness**
-  - Manager-created invoice default currency is **UAH**.
-  - `manager_create_invoice` resolves customer and stamps `customerEmail/company_id` so client portal visibility is reliable.
-  - Timeline kinds updated to include `iban_issued`.
+Work:
+- Create `backend/app/seo/` package:
+  - `origin.py` (resolve origin from env + optional admin override)
+  - `canonical.py` (strip trackers, normalize scheme/host)
+  - `hreflang.py` (uk/en/x-default map)
+  - `robots.py` (env-aware: dev/test/preview/stage disallow + noindex)
+  - `sitemap.py` (sitemap index + typed sitemap generators)
+- Replace legacy `backend/app/routers/seo.py` with new engines (remove `/cars`, `vin_data`, `collections`).
+- Replace static `frontend/public/robots.txt` & `frontend/public/sitemap.xml` with thin stubs OR redirect to dynamic endpoints.
+- Add POC script `backend/scripts/poc_seo_engines.py` that:
+  - calls `/robots.txt`, `/sitemap.xml` (index), typed sitemaps
+  - validates XML well-formedness + required fields + canonical stripping
+  - checks **zero “bibicars”** in any output.
 
-POC script:
-- ✅ `/app/backend/scripts/poc_iban_flow.py`
-  - Full end-to-end IBAN flow covering: requisites → create invoice → contract sign (offline) → issue-iban → client upload proof + confirm → manager confirm → order created.
-  - **Result: 24/24 checks passed (GREEN).**
-
-**Phase 1 status:** ✅ Completed and validated.
+Exit criteria:
+- POC script green; curl-based checks pass; no bibicars strings anywhere in SEO surfaces.
 
 ---
 
-### Phase 2 — V1 App Development (UI wiring around proven core)
-**Goal:** Implement UX in Admin CRM, Manager CRM, and Client portal.
+### Phase 2 — V1 App Development (Dynamic metadata + JSON‑LD + admin wiring)
+**Goal:** Implement per-route SEO head generation and structured data; wire admin SEO settings for verification/analytics.
 
 User stories:
-1. As an admin, I can configure requisites per currency and preview how they appear on invoices.
-2. As a manager, I can see contract status for an invoice and complete online/offline signing.
-3. As a manager, I can issue an IBAN invoice only after contract is signed.
-4. As a client, I can view IBAN requisites, copy details, upload proof, and confirm payment.
-5. As a manager, I can review a queue of payment claims with proof preview and confirm/reject.
+1. As a visitor, each public page has a unique Title/Description/OG/Twitter and correct canonical.
+2. As Google, I can parse JSON‑LD for Organization/Website/Breadcrumbs/Service/FAQ/Article with no schema errors.
+3. As an editor, I can update default SEO identity + verification tokens in CRM without redeploy.
+4. As a bilingual user, I see correct hreflang tags and localized meta where applicable.
+5. As an operator, legacy meta (author/publisher/locale/canonicals) never references BiBi Cars.
 
-Frontend work:
-- ✅ **Admin Settings → “Реквізити для оплати (IBAN)”** (`/app/settings`)
-  - Implemented `components/admin/BillingRequisites.jsx`.
-  - Mounted on the **correct** CRM settings page: `pages/portal/Settings.js` (route `/app/settings`).
-  - Supports legal entity fields + per-currency accounts; toggles + validation.
-  - Verified visually: save toast “Реквізити збережено” + persistence.
-- ✅ **Manager invoices** (`/app/crm/invoices`)
-  - Rewrote `pages/portal/CrmInvoices.js`:
-    - 3-step ManageDrawer: Contract (online/offline) → Issue IBAN (gated) → Confirm/Reject payment.
-    - Proof preview link in Step 3.
-    - Create-invoice dialog (UAH default).
-- ✅ **Client portal (/client) — “Рахунки / Оплата”**
-  - Added route + nav: `/client/invoices`.
-  - Implemented `pages/client/ClientInvoices.js`:
-    - Invoice list, status badges, requisites snapshot with copy buttons.
-    - Mandatory proof upload + confirm payment.
-    - Displays “Under review/На перевірці”, “Paid/Сплачено”, rejection reason.
-  - Styling added to `pages/client/client.css` (ci-* classes).
-- ✅ **Freeze Stripe UX**
-  - Stripe flows remain in code, but client-facing portal uses IBAN only.
-  - Legacy Stripe cabinet invoices page is **unrouted**.
+Work:
+- Frontend: replace `useSeo()` with `SeoHead` component that renders:
+  - title, description, canonical, robots meta, OG/Twitter, hreflang, JSON‑LD, breadcrumbs
+  - per-route templates for: `/`, `/services`, `/calculator`, `/waste`, category, code, `/licenses`, `/industries`, `/about`, `/contacts`, `/blog`, `/blog/:slug`, legal pages.
+- Backend: `backend/app/seo/schema.py` for JSON‑LD builders:
+  - Organization/Corporation/LocalBusiness (config-driven, no fabricated facts)
+  - WebSite + SearchAction, BreadcrumbList
+  - Service, FAQPage, Article, WebPage, ContactPoint, PostalAddress, GeoCoordinates
+  - SoftwareApplication for calculator
+- Admin SEO settings:
+  - extend `seo_settings` schema for EEAT fields (license number, address, geo, founding date, team page refs) with placeholders when unknown
+  - ensure `/api/seo/runtime-config` emits only safe public subset
+  - ensure admin UI page (existing) can edit these fields.
+- Remove/replace stale static `index.html` head defaults:
+  - canonical/hreflang/og/url/locale/author/publisher updated to ECO.NOVA + env-driven origin.
 
-End of Phase 2: testing
-- ✅ E2E via `testing_agent_v3`:
-  - Backend 100% endpoints functional
-  - Manager UI 100% flow
-  - Client UI 100% flow
-  - Admin UI initially flagged due to wrong (dead) Settings file; fixed by mounting requisites UI into `pages/portal/Settings.js`.
-
-**Phase 2 status:** ✅ Completed and verified.
+Testing:
+- E2E: validate meta/OG/Twitter/hreflang on core routes in both languages.
+- Rich Results smoke: schema JSON‑LD present + syntactically valid.
 
 ---
 
-### Phase 3 — Hardening + UX polish (production-friendly)
-**Goal:** Optional improvements after V1 completion.
+### Phase 3 — Rendering for SEO (Prerender/SSR for crawlers)
+**Goal:** Ensure Google receives ready HTML (head + optionally body) for public routes.
 
 User stories:
-1. As a manager, I can filter payment claims by customer/invoice/date and quickly act.
-2. As a client, I can see clear instructions (steps) and warnings about bank transfer timing.
-3. As an admin, I can disable a currency account without breaking historical invoices.
-4. As a manager, I can download the invoice PDF and attach it to messages.
-5. As an operator, I can audit the full timeline: contract signed → invoice issued → claim → confirmed.
+1. As Googlebot, I receive server-generated HTML with full meta tags on first byte.
+2. As a user, site behavior remains identical (no cloaking; same content), just faster indexing.
+3. As an operator, prerender is cached and does not overload the server.
+4. As a developer, non-prod environments remain noindex/disallowed.
+5. As a content editor, changes propagate to prerender cache within minutes.
 
-Hardening tasks (future / optional):
-- Add stronger i18n coverage for new strings (UK primary) and consistent status naming across CRM + client portal.
-- Extend timeline/audit events:
-  - `payment_claimed`, `payment_confirmed`, `payment_rejected` (beyond `iban_issued`).
-- Improve Manager create-invoice UX:
-  - multi-line item builder, customer picker, better validation.
-- PDF improvements:
-  - ensure invoice PDF includes requisites snapshot + payment purpose.
-- Contract UX polish:
-  - show/view online e-sign link more prominently, surface contract PDF preview.
-- Payment enhancements (only if needed):
-  - partial payments, multiple proofs, or reconciliation notes.
+Work:
+- Implement backend middleware/router for bot detection (Googlebot/Bingbot + generic crawlers) and:
+  - inject full `<head>` into the HTML shell (always)
+  - optionally Playwright-based full-body prerender for a whitelist of public routes (cached, TTL, safe fallbacks)
+- Add cache invalidation hooks for blog/site-info updates.
 
-**Phase 3 status:** ⏳ Not required for V1; available as next iteration.
+Testing:
+- Curl with bot UA → receives enriched HTML.
+- Lighthouse SEO on prerendered pages.
+
+---
+
+### Phase 4 — Content & E‑E‑A‑T Hardening (human, original, verifiable)
+**Goal:** Replace AI-templated public content with expert, original copy and real corporate signals.
+
+User stories:
+1. As a prospect, I read clear, expert explanations with real examples and practical guidance.
+2. As Google, I see authors, dates, sources, and corporate proof (licenses/contacts/location).
+3. As an admin, I can edit public copy, FAQs, and EEAT blocks without code changes.
+4. As a visitor, each service/waste category has unique content (no duplication across pages).
+5. As a reviewer, no page uses keyword stuffing or repetitive AI phrasing.
+
+Work:
+- Create content rewriting backlog for all public pages (UA first, EN second).
+- Add author profiles + updated/published dates for blog and key pages.
+- Add “Licenses & documents” page section with real uploads (admin-managed), no fabricated IDs.
+- Add real-case studies module (admin-managed) with photos and outcomes.
+
+Testing:
+- Manual review checklist (duplication, tone, EEAT completeness) + internal linking coverage.
+
+---
+
+### Phase 5 — Perf, Images, Crawl, Semantics, Accessibility
+**Goal:** Achieve green CWV and a crawl-friendly, accessible semantic structure.
+
+User stories:
+1. As a mobile user, pages load fast (LCP/INP/CLS in green) and images don’t shift layout.
+2. As Google, I can crawl via strong internal linking, breadcrumbs, and related content blocks.
+3. As a screen-reader user, the site is navigable and properly labeled.
+4. As an editor, images automatically get correct dimensions and responsive formats.
+5. As an operator, broken links/404s/redirects are tracked and fixed.
+
+Work:
+- Image pipeline: ensure width/height, lazy loading, srcset/sizes, WebP/AVIF where possible, preload hero.
+- Code-splitting for public routes; font-display; reduce render-blocking.
+- Semantic HTML refactor on key pages (header/main/section/article/nav/footer).
+- A11y pass: ARIA labels, focus states, contrast, keyboard navigation.
+
+Testing:
+- Lighthouse (SEO + Best Practices + Perf), CWV checks, broken link scan.
+
+---
+
+### Phase 6 — Final Audit + SEO Audit Report
+**Goal:** produce a measurable, repeatable SEO baseline.
+
+User stories:
+1. As an owner, I get a report with what changed and what’s next.
+2. As a marketer, Search Console verification + analytics hooks are ready.
+3. As Google, I see consistent canonical/hreflang/sitemap/robots across the site.
+4. As a QA, I can confirm no duplicate titles/descriptions/H1.
+5. As an operator, redirects/404s are handled cleanly.
+
+Deliverables:
+- SEO Audit Report: changes, Lighthouse/CWV numbers, schema types list, sitemap map, fixed-issues list.
 
 ## 3) Next Actions
-**V1 delivered.** If continuing:
-1. Decide which Phase 3 hardening items are required for production.
-2. Add a regression test suite for IBAN flow (API-level) + UI smoke tests.
-3. Polish manager/customer experience (filters, messaging attachments, PDF templates).
+1. Confirm production domain (or keep env-only via `SEO_PUBLIC_ORIGIN` until ready).
+2. Collect EEAT facts you can provide now (license number, address, geo, company docs, team photos) — otherwise keep placeholders.
+3. Start Phase 1: implement new `backend/app/seo/` engines + POC script and remove `/cars` sitemap logic.
 
 ## 4) Success Criteria
-- ✅ Admin can configure requisites per currency; invoices snapshot correct requisites.
-- ✅ Manager cannot issue IBAN invoice unless contract is signed (online or offline).
-- ✅ Client must upload proof before confirming payment.
-- ✅ Manager sees pending-confirmation queue; confirm sets invoice `paid` and **creates order** (idempotent) via `create_order_from_invoice`.
-- ✅ Stripe checkout is not accessible from client UI; IBAN flow is the only usable path.
-- ✅ No regressions in core CRM; verified with E2E testing agent + manual spot checks.
+- Zero BiBi Cars artifacts (`bibicars`, car routes, bg_BG, wrong author/publisher) in code + runtime SEO outputs.
+- Dynamic `robots.txt` and multi-sitemap system valid XML, env-aware indexing rules.
+- Per-route metadata + JSON‑LD validated (Rich Results Test passes; no schema errors).
+- Googlebot receives ready HTML (head at minimum; body prerender for critical pages).
+- Lighthouse ≥95 SEO and ≥95 Best Practices on key public pages; CWV green on mobile.
+- Content is human-grade, non-duplicative, EEAT-complete with real verifiable company signals.
