@@ -88,6 +88,7 @@ export default function CookieConsent() {
         <h3 className="cookie__title">{title}</h3>
       </div>
       <p className="cookie__body">{body}</p>
+      <Link to="/cookies" className="cookie__more" data-testid="cookie-policy-link">{L.more}</Link>
       <div className="cookie__actions">
         <button type="button" className="cookie__btn cookie__btn--primary" onClick={() => decide("all")} data-testid="cookie-accept-all">
           {L.acceptAll}
@@ -96,7 +97,6 @@ export default function CookieConsent() {
           {L.acceptNecessary}
         </button>
       </div>
-      <Link to="/cookies" className="cookie__more" data-testid="cookie-policy-link">{L.more}</Link>
     </div>
   );
 }
