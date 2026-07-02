@@ -182,8 +182,9 @@ FOOTER_DEFAULTS: Dict[str, Any] = {
     ],
     "badges": ["Ліцензія Мінекології", "Акти 1–4 клас", "ADR-транспорт"],
     "bottomLinks": [
-        {"label": "Політика конфіденційності", "href": "/privacy"},
         {"label": "Умови використання", "href": "/terms"},
+        {"label": "Політика конфіденційності", "href": "/privacy"},
+        {"label": "Політика Cookies", "href": "/cookies"},
     ],
     "copyright": "ECO Utilization Platform",
 }
