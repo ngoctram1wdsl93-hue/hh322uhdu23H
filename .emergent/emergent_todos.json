@@ -1,0 +1,30 @@
+[
+  {
+    "content": "Audit: identify unfinished work (favicon/cookie/footer/legal)",
+    "status": "completed"
+  },
+  {
+    "content": "Redesign favicon: premium eco mark, crisp at 16px, regenerate all PNG/ICO sizes",
+    "status": "completed"
+  },
+  {
+    "content": "Fix access-card contrast: ECO.NOVA B2B badge + buttons visibility on dark photo",
+    "status": "completed"
+  },
+  {
+    "content": "Update copyright to reflect waste-utilization domain (uk+en)",
+    "status": "completed"
+  },
+  {
+    "content": "Expand legal texts (terms/privacy/cookies) to full-scale documents + resync DB",
+    "status": "completed"
+  },
+  {
+    "content": "Verify/tune FAB lift so it never covers footer text",
+    "status": "completed"
+  },
+  {
+    "content": "Test everything end-to-end + final summary",
+    "status": "in_progress"
+  }
+]

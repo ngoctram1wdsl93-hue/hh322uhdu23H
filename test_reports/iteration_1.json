@@ -1,0 +1,49 @@
+{
+  "summary": "ECO.NOVA deployment smoke test completed successfully. Fresh deployment of mature B2B hazardous waste platform verified end-to-end. All critical services operational, authentication working, key pages render without crashes or raw i18n keys.",
+  "backend_issues": {
+    "critical_bugs": [],
+    "flaky_endpoints": [],
+    "notes": "All backend endpoints tested successfully. Zero counts on dashboards are EXPECTED (fresh DB with only seeded waste catalog + staff accounts)."
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "notes": [
+      "Public home page defaults to English on first load (UA/EN toggle works)",
+      "Client login page shows 'Google sign-in temporarily unavailable' - EXPECTED (Google OAuth not configured in this deployment)",
+      "Zero counts on CRM dashboards are EXPECTED (fresh database)"
+    ]
+  },
+  "passed_tests": [
+    "Backend: Health check with mongo_ok=true",
+    "Backend: Admin login (admin@bibi.cars / Admin12345!)",
+    "Backend: Manager login (manager@bibi.cars / Manager12345!)",
+    "Backend: Admin endpoints (staff, settings, waste companies, requests, stats)",
+    "Backend: Public endpoints (waste categories, codes, search, license check)",
+    "Backend: Manager endpoints (auth/me, calls, waste companies)",
+    "Backend: CRM endpoints (tasks, invoices, documents)",
+    "Frontend: Public home page loads (ECO.NOVA landing)",
+    "Frontend: Cookie banner works",
+    "Frontend: Public navigation (waste catalog, calculator, contacts)",
+    "Frontend: Admin login page renders (Ukrainian CRM console)",
+    "Frontend: Admin login redirects to /app CRM dashboard (Огляд page with KPI cards)",
+    "Frontend: CRM pages render without errors (Operations, Companies, Requests, Directory, CRM Hub, Staff, Pricing, Licenses)",
+    "Frontend: Manager login works and redirects to /app/cabinet workspace",
+    "Frontend: Manager workspace renders with Ukrainian content",
+    "Frontend: Client cabinet login page renders at /client/login"
+  ],
+  "test_report_links": [
+    "/app/backend/deployment_smoke_test.py"
+  ],
+  "success_percentage": {
+    "backend": "100% (19/19 tests passed)",
+    "frontend": "100% (all key pages render without crashes or raw i18n keys)"
+  },
+  "updated_files": [
+    "/app/backend/deployment_smoke_test.py"
+  ],
+  "action_item_for_main_agent": "",
+  "should_call_test_agent_after_fix": false,
+  "should_main_agent_test_itself": false
+}
